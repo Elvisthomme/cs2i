@@ -1,0 +1,99 @@
+
+###############################################################
+# CS2I full-stack stack – local network deployment            #
+###############################################################
+
+services:
+  # ─────────────────────────────────────────────────────────────
+  # Database (MySQL 8)
+  # ─────────────────────────────────────────────────────────────
+  db:
+    image: mysql:8.3
+    container_name: cs2i-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+      MYSQL_DATABASE: cs2i
+      MYSQL_USER: cs2i_user
+      MYSQL_PASSWORD: cs2i_pwd
+      TZ: Europe/Paris
+    volumes:
+      - db_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    networks:
+      - cs2i-net
+
+  # ─────────────────────────────────────────────────────────────
+  # Redis – cache layer
+  # ─────────────────────────────────────────────────────────────
+  redis:
+    image: redis:7
+    container_name: cs2i-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    networks:
+      - cs2i-net
+
+  # ─────────────────────────────────────────────────────────────
+  # API – Express + Sequelize
+  # ─────────────────────────────────────────────────────────────
+  api:
+    build:
+      context: ./cs2i-api
+      dockerfile: Dockerfile
+    container_name: cs2i-api
+    restart: unless-stopped
+    env_file:
+      - ./cs2i-api/.env.local
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+      - redis
+    networks:
+      - cs2i-net
+
+  # ─────────────────────────────────────────────────────────────
+  # Admin – Next.js (App Router)
+  # ─────────────────────────────────────────────────────────────
+  admin:
+    build:
+      context: ./cs2i-admin
+      dockerfile: Dockerfile
+    container_name: cs2i-admin
+    restart: unless-stopped
+    env_file:
+      - ./cs2i-admin/.env.local
+    ports:
+      - "3002:3002"
+    depends_on:
+      - api
+    networks:
+      - cs2i-net
+
+  # ─────────────────────────────────────────────────────────────
+  # Client – Next.js (pages/app mixed)
+  # ─────────────────────────────────────────────────────────────
+  client:
+    build:
+      context: ./cs2i-client
+      dockerfile: Dockerfile
+    container_name: cs2i-client
+    restart: unless-stopped
+    env_file:
+      - ./cs2i-client/.env.local
+    ports:
+      - "3001:3001"
+    depends_on:
+      - api
+    networks:
+      - cs2i-net
+
+volumes:
+  db_data:
+
+networks:
+  cs2i-net:
+    driver: bridge

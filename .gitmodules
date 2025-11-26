@@ -1,0 +1,12 @@
+[submodule "cs2i-api"]
+	path = cs2i-api
+	url = git@github.com:Shlife/cs2i-api.git
+
+[submodule "cs2i-admin"]
+	path = cs2i-admin
+	url = git@github.com:Shlife/cs2i-admin.git
+
+[submodule "cs2i-client"]
+	path = cs2i-client
+	url = git@github.com:Shlife/cs2i-client.git
+

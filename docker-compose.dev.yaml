@@ -1,0 +1,105 @@
+services:
+  db:
+    image: mysql:8.3
+    container_name: cs2i-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+      MYSQL_DATABASE: cs2i
+      MYSQL_USER: cs2i_user
+      MYSQL_PASSWORD: cs2i_pwd
+      TZ: Europe/Paris
+    volumes:
+      - db_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    networks:
+      - cs2i-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  redis:
+    image: redis:7
+    container_name: cs2i-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    networks:
+      - cs2i-net
+
+  api:
+    image: node:20-alpine
+    container_name: cs2i-api
+    restart: unless-stopped
+    working_dir: /usr/src/app
+    command: sh -c "npm install && npm start"
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+      - CHOKIDAR_INTERVAL=1000
+    env_file:
+      - ./cs2i-api/.env.local
+    ports:
+      - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    networks:
+      - cs2i-net
+    volumes:
+      - ./cs2i-api:/usr/src/app
+      - /usr/src/app/node_modules
+
+  admin:
+    image: node:20-alpine
+    container_name: cs2i-admin
+    restart: unless-stopped
+    working_dir: /usr/src/app
+    command: sh -c "npm install && npm run dev"
+    environment:
+      - WATCHPACK_POLLING=true
+      - CHOKIDAR_USEPOLLING=true
+      - CHOKIDAR_INTERVAL=1000
+    env_file:
+      - ./cs2i-admin/.env.local
+    ports:
+      - "3002:3002"
+    depends_on:
+      - api
+    networks:
+      - cs2i-net
+    volumes:
+      - ./cs2i-admin:/usr/src/app
+      - /usr/src/app/node_modules
+
+  client:
+    image: node:20-alpine
+    container_name: cs2i-client
+    restart: unless-stopped
+    working_dir: /usr/src/app
+    command: sh -c "npm install && npm run dev"
+    environment:
+      - WATCHPACK_POLLING=true
+      - CHOKIDAR_USEPOLLING=true
+      - CHOKIDAR_INTERVAL=1000
+    env_file:
+      - ./cs2i-client/.env.local
+    ports:
+      - "3001:3001"
+    depends_on:
+      - api
+    networks:
+      - cs2i-net
+    volumes:
+      - ./cs2i-client:/usr/src/app
+      - /usr/src/app/node_modules
+
+volumes:
+  db_data:
+
+networks:
+  cs2i-net:
+    driver: bridge
