@@ -155,7 +155,11 @@
       "Bash(find:*)",
       "Bash(docker volume rm:*)",
       "Bash(docker exec:*)",
-      "Bash(chmod:*)"
+      "Bash(chmod:*)",
+      "Bash(npm start)",
+      "Bash(npm run dev:*)",
+      "Bash(sudo rm:*)",
+      "Bash(pkill:*)"
     ],
     "deny": [],
     "ask": []
