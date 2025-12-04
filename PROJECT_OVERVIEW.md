@@ -1,14 +1,14 @@
-# CS2I Monorepo – Project Overview
+# CS2I Monorepo - Project Overview
 
 This document gives you a high-level map of the existing code-base so you can extend it with confidence.
 
 ## 1. Repository Layout
 
-- **`cs2i-api/`** – REST API built with Express + Sequelize (MySQL)  
+- **`cs2i-api/`** - REST API built with Express + Sequelize (MySQL)  
   All routes are mounted under `ROOT_API` (default `/api/v1`).
-- **`cs2i-admin/`** – Admin front-office built with **Next.js 14** (App Router, TypeScript).  
+- **`cs2i-admin/`** - Admin front-office built with **Next.js 14** (App Router, TypeScript).  
   Talks to the API through `NEXT_PUBLIC_API_URL` and uses **NextAuth.js** for session handling.
-- **`cs2i-client/`** – Public client-side app (also Next.js).  
+- **`cs2i-client/`** - Public client-side app (also Next.js).  
   Shares most of the auth logic with the admin.
 
 ---
@@ -44,7 +44,7 @@ EMAIL_RECRUTEMENT_PASSWORD=********
 # ── Authentication ────────────────────────────────────────────────────
 JWT_SECRET=<<random-hex>>   # If omitted, `config/config.json.salt` is used
 JWT_REFRESH_SECRET=<<random-hex>>
-TOKEN_LIFETIME=2592000      # Seconds (30 days) – overrides `tokenLifetime` in config
+TOKEN_LIFETIME=2592000      # Seconds (30 days) - overrides `tokenLifetime` in config
 
 # ── Front-end URLs (emails, password reset) ───────────────────────────
 CLIENT_URL=http://localhost:3002
@@ -115,8 +115,8 @@ Every *collection* route that calls `utils.showAll()` accepts the following quer
 
 - `page` (default **1**)
 - `per_page` (default **10**)
-- `sort_by=<column>`   – ascending
-- `sort_by_desc=<column>` – descending
+- `sort_by=<column>`   - ascending
+- `sort_by_desc=<column>` - descending
 - Any other field present in the model can be provided to **filter**. For multi-values use a comma-separated list: `status=pending,approved`.
 
 The helper automatically adds `deletedAt = null` so soft-deleted rows are hidden.
@@ -129,7 +129,7 @@ The helper automatically adds `deletedAt = null` so soft-deleted rows are hidden
 |------|---------|
 | **`middlewares/authJwt.js`** | `verifyToken` (+ attaches `req.user`) & `isAdmin` role guard |
 | **`middlewares/verifySignUp.js`** | Pre-signup duplicate checks (login/email/phone) |
-| **`middlewares/validate.js`** | `joiValidator(schema)` – request validation |
+| **`middlewares/validate.js`** | `joiValidator(schema)` - request validation |
 | **`middlewares/uploadFile.js`** | Multer wrapper for file uploads |
 
 They are re-exported via `middlewares/index.js` and used directly in route definitions.

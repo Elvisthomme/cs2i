@@ -1,0 +1,7 @@
+{
+    "i18n-ally.localesPaths": [
+        "cs2i-api/locales",
+        "cs2i-admin/src/lib/core/components/icons/language"
+    ],
+    "i18n-ally.sourceLanguage": "fr"
+}
