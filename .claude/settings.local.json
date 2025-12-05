@@ -264,7 +264,10 @@
       "Bash(mysql:*)",
       "Bash(npm run:*)",
       "Bash(xargs:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(git cherry-pick:*)",
+      "Bash(git checkout:*)",
+      "Bash(git merge:*)"
     ],
     "deny": [],
     "ask": []
